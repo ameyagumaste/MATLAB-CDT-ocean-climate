@@ -1,0 +1,75 @@
+% =========================================================================
+% SST Trend Analysis using Climate Data Toolbox (CDT)
+% Author: Nikita Dara
+% Description: This script analyzes Pacific sea surface temperatures (SST)
+% using MATLAB and CDT. It includes data visualization, deseasoning, trend
+% analysis, and statistical significance testing.
+% =========================================================================
+
+%% Setup and Load Data
+cdt deseason                 % Ensure CDT functions are available
+load pacific_sst            % Load example dataset (lat, lon, sst, t)
+whos                        % View workspace variables and their sizes
+
+%% Mean SST Map
+sst_mean = mean(sst,3);     % Compute average SST over time
+imagescn(lon,lat,sst_mean)  % Plot mean SST using CDT's image function
+xlabel('Longitude')         % Label x-axis
+ylabel('Latitude')          % Label y-axis
+colorbar                    % Display color scale
+
+%% Colormap and Borders
+cmocean                     % View available cmocean color maps
+cmocean thermal             % Apply 'thermal' colormap (ideal for temperature)
+hold on                     % Keep figure active for further plotting
+borders                     % Overlay country borders for context
+
+%% Select Grid Cell Near (23N, 115W)
+row = near1(lat,23);        % Find nearest latitude index to 23°N
+col = near1(lon,-115);      % Find nearest longitude index to 115°W
+plot(lon(col),lat(row),'ko')% Mark the selected grid cell with a black circle
+
+%% Extract and Clean Time Series at Location
+sst1 = sst(row,col,:);      % Extract 1D SST time series at selected location
+sst1 = squeeze(sst1);       % Convert from 3D to 1D vector
+
+%% Plot Time Series
+clf                         % Clear figure
+plot(t,sst1)                % Plot raw SST time series
+xlabel('Time')              % Label x-axis
+ylabel('Temperature (°C)')  % Label y-axis
+datetick                    % Format x-axis to display human-readable dates
+
+%% Deseason the Data
+sst1_ds = deseason(sst1,t); % Remove seasonal cycle
+hold on
+plot(t,sst1_ds)             % Overlay deseasoned data on plot
+
+%% Linear Trend Lines
+polyplot(t,sst1)            % Add trend line to raw SST
+polyplot(t,sst1_ds)         % Add trend line to deseasoned SST
+
+%% Calculate Trend Value
+trend_val = trend(sst1,12); % Compute trend (°C/year), assumes 12 points per year
+total_warming = trend_val * 67;  % Estimate total warming over 67 years (since 1950)
+
+%% Map of SST Trends
+sst_tr = trend(sst,12);     % Calculate trend at each grid cell
+clf
+imagescn(lon,lat,sst_tr)    % Plot spatial trend map
+cb = colorbar;              % Create colorbar
+ylabel(cb,'SST Trend °C/yr')% Label colorbar
+cmocean('balance','pivot')  % Apply balanced colormap centered around 0
+
+%% Trend Significance Testing
+[sst_tr, p] = trend(sst,12);     % Get trend and p-values
+sig_test = mann_kendall(sst1);  % Mann-Kendall significance test on time series
+control_test = mann_kendall(rand(size(sst1))); % Control test on random data
+
+%% Map of Significance
+mk = mann_kendall(sst);     % Apply Mann-Kendall test across grid
+hold on
+stipple(lon,lat,mk)         % Add stippling on significant areas
+
+%% Save Final Figure
+% saveas(gcf, 'plots/sst_trend_map.png') % Optional save command
