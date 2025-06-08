@@ -7,20 +7,9 @@ This project performs spatial and temporal analysis of Pacific Ocean sea surface
 
 ## 👨‍💻 Author
 
-**Ameya Gumaste** (He/Him)  
-📊 Analytics Intern at Opsight AI  
-🎓 M.Sc. Business Intelligence & Analytics | MBA | B.Sc. Physics (Merit List)  
+Ameya Gumaste (He/Him)  
+🎓M2 student- Arctic Studies, Paris Sacalay Univerite| M.Sc. Business Intelligence & Analytics | MBA | B.Sc. Physics (Merit List)  
 🔗 [LinkedIn](https://www.linkedin.com/in/ameyagumaste)
-
----
-
-## 📁 Folder Structure
-
-- `/scripts`: Main MATLAB script for SST analysis
-- `/data`: Dataset info (pacific_sst.mat referenced, not uploaded)
-- `/plots`: Exported visualizations
-- `/docs`: Markdown explanation of methods
-- `sst_analysis_with_comments.txt`: Full code with comments
 
 ## 🛠️ Requirements
 
